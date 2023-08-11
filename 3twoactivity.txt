@@ -1,0 +1,291 @@
+3. Design an Android application to create and start activity?.
+Program:
+Activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:paddingBottom="@dimen/activity_vertical_margin"
+ android:paddingLeft="@dimen/activity_horizontal_margin"
+ android:paddingRight="@dimen/activity_horizontal_margin"
+ android:paddingTop="@dimen/activity_vertical_margin"
+ tools:context="com.example.twoactivity.MainActivity">
+ <TextView
+ android:id="@+id/text_header_reply"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="@string/text_header_reply"
+ android:visibility="invisible"
+ android:layout_marginBottom="@dimen/activity_vertical_margin"
+ android:textAppearance="?android:attr/textAppearanceMedium"
+ android:textStyle="bold"/>
+ <TextView
+ android:id="@+id/text_message_reply"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:layout_below="@+id/text_header_reply"
+ android:visibility="invisible"
+ android:layout_marginLeft="@dimen/activity_horizontal_margin"
+ android:layout_marginStart="@dimen/activity_horizontal_margin"
+ android:textAppearance="?android:attr/textAppearanceMedium" />
+ <Button
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="@string/button_main"
+ android:id="@+id/button_main"
+ android:layout_alignParentBottom="true"
+ android:layout_alignParentRight="true"
+ android:layout_alignParentEnd="true"
+ android:onClick="launchSecondActivity"/>
+ <EditText
+ android:id="@+id/editText_main"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_alignParentBottom="true"
+ android:layout_toLeftOf="@+id/button_main"
+ android:layout_toStartOf="@+id/button_main"
+ android:hint="@string/editText_main" />
+</RelativeLayout>
+activity_second.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:paddingBottom="@dimen/activity_vertical_margin"
+ android:paddingLeft="@dimen/activity_horizontal_margin"
+ android:paddingRight="@dimen/activity_horizontal_margin"
+ android:paddingTop="@dimen/activity_vertical_margin"
+ tools:context="com.example.twoactivity.SecondActivity">
+ <TextView
+ android:id="@+id/text_header"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="@string/text_header"
+ android:layout_marginBottom="@dimen/activity_vertical_margin"
+ android:textAppearance="?android:attr/textAppearanceMedium"
+ android:textStyle="bold"/>
+ <TextView
+ android:id="@+id/text_message"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:layout_below="@+id/text_header"
+ android:layout_marginLeft="@dimen/activity_horizontal_margin"
+ android:layout_marginStart="@dimen/activity_horizontal_margin"
+ android:textAppearance="?android:attr/textAppearanceMedium" />
+ <Button
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="@string/button_second"
+ android:id="@+id/button_second"
+ android:layout_alignParentBottom="true"
+ 
+ android:layout_alignParentRight="true"
+ android:layout_alignParentEnd="true"
+ android:onClick="returnReply"/>
+ <EditText
+ android:id="@+id/editText_second"
+ android:layout_width="match_parent"
+ android:layout_height="wrap_content"
+ android:layout_alignParentBottom="true"
+ android:layout_toLeftOf="@+id/button_second"
+ android:layout_toStartOf="@+id/button_second"
+ android:hint="@string/editText_second" />
+</RelativeLayout>
+
+
+MainActivity.java
+package com.example.twoactivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+/**
+* The TwoActivities app contains two activities and sends messages (intents) between them.
+*/
+public class MainActivity extends AppCompatActivity {
+ // Class name for Log tag
+ private static final String LOG_TAG = MainActivity.class.getSimpleName();
+ // Unique tag required for the intent extra
+ public static final String EXTRA_MESSAGE =
+"com.example.android.twoactivities.extra.MESSAGE";
+ // Unique tag for the intent reply
+ public static final int TEXT_REQUEST = 1;
+ // EditText view for the message
+ private EditText mMessageEditText;
+ // TextView for the reply header
+ private TextView mReplyHeadTextView;
+ // TextView for the reply body
+ private TextView mReplyTextView;
+ /**
+ * Initializes the activity.
+ *
+ * @param savedInstanceState The current state data.
+ */
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ // Initialize all the view variables.
+ mMessageEditText = (EditText) findViewById(R.id.editText_main);
+ mReplyHeadTextView = (TextView) findViewById(R.id.text_header_reply);
+ mReplyTextView = (TextView) findViewById(R.id.text_message_reply);
+ }
+ /**
+ * Handle the onClick for the "Send" button. Gets the value of the main EditText,
+ * creates an intent, and launches the second activity with that intent.
+ *
+ * The return intent from the second activity is onActivityResult().
+ * @param view The view (Button) that was clicked.
+ */
+ public void launchSecondActivity(View view) {
+ Log.d(LOG_TAG, "Button clicked!");
+ Intent intent = new Intent(this, SecondActivity.class);
+ String message = mMessageEditText.getText().toString();
+ intent.putExtra(EXTRA_MESSAGE, message);
+ startActivityForResult(intent, TEXT_REQUEST);
+ }
+ /**
+ * Handle the data in the return intent from SecondActivity.
+ *
+ * @param requestCode Code for the SecondActivity request.
+ * @param resultCode Code that comes back from SecondActivity.
+ * @param data Intent data sent back from SecondActivity.
+ */
+ @Override
+ public void onActivityResult(int requestCode, int resultCode, Intent data) {
+ super.onActivityResult(requestCode, resultCode, data);
+ // Test for the right intent reply
+ if (requestCode == TEXT_REQUEST) {
+ // Test to make sure the intent reply result was good.
+ if (resultCode == RESULT_OK) {
+ String reply = data.getStringExtra(SecondActivity.EXTRA_REPLY);
+ // Make the reply head visible.
+ mReplyHeadTextView.setVisibility(View.VISIBLE);
+ // Set the reply and make it visible.
+ mReplyTextView.setText(reply);
+ mReplyTextView.setVisibility(View.VISIBLE);
+ }
+ }
+ }
+}
+SecondActivity.java
+package com.example.twoactivity;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.content.Intent;
+import android.widget.TextView;
+import android.view.View;
+import android.widget.EditText;
+public class SecondActivity extends AppCompatActivity {
+ public static final String EXTRA_REPLY =
+ "com.example.android.twoactivities.extra.REPLY";
+ private EditText mReply;
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_second);
+ mReply = (EditText) findViewById(R.id.editText_second);
+ Intent intent = getIntent();
+ String message =
+ intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+ TextView textView = (TextView) findViewById(R.id.text_message);
+ textView.setText(message);
+ }
+ public void returnReply(View view) {
+ String reply = mReply.getText().toString();
+ Intent replyIntent = new Intent();
+ replyIntent.putExtra(EXTRA_REPLY, reply);
+ setResult(RESULT_OK, replyIntent);
+ finish();
+ }
+}
+
+strings.xml
+<resources>
+ <!-- Title of app -->
+ <string name="app_name">Two Activities</string>
+ <!-- Title of second activity -->
+ <string name="activity2_name">Second Activity</string>
+ <!-- Message header text (in second activity) [CHAR LIMIT=30]-->
+ <string name="text_header">Message Received</string>
+ <!-- Button label in main activity [CHAR LIMIT=10]-->
+ <string name="button_main">Send</string>
+ <!-- Hint for message edit text in main activity [CHAR LIMIT=30]-->
+ <string name="editText_main">Enter Your Message Here</string>
+ <!-- Button label in second activity [CHAR LIMIT=10]-->
+ <string name="button_second">Reply</string>
+ <!-- Hint for reply edit text in second activity [CHAR LIMIT=30]-->
+ <string name="editText_second">Enter Your Reply Here</string>
+ <!-- Reply header text in main activity [CHAR LIMIT=30]-->
+ <string name="text_header_reply">Reply Received</string>
+</resources>
+Styles.xml
+<resources>
+ <!-- Base application theme. -->
+ <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+ <item name="colorPrimary">@color/colorPrimary</item>
+ <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+ <item name="colorAccent">@color/colorAccent</item>
+ </style>
+</resources>
+colors.xml
+<resources>
+ <color name="colorPrimary">#3F51B5</color>
+ <color name="colorPrimaryDark">#303F9F</color>
+ <color name="colorAccent">#FF4081</color>
+</resources>
+dimens.xml
+<resources>
+ <!-- Default screen margins, per the Android Design guidelines. -->
+ <dimen name="activity_horizontal_margin">16dp</dimen>
+ <dimen name="activity_vertical_margin">16dp</dimen>
+</resources>
+
+themes.xml
+<resources xmlns:tools="http://schemas.android.com/tools">
+ <!-- Base application theme. -->
+ <style name="Theme.TwoActivity"
+parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+ <!-- Primary brand color. -->
+ <item name="colorPrimary">#7B1FA2</item>
+ <item name="colorPrimaryVariant">#7B1FA2</item>
+ <item name="colorOnPrimary">#FFFFFF</item>
+ <!-- Secondary brand color. -->
+ <item name="colorSecondary">#80CBC4</item>
+ <item name="colorSecondaryVariant">#80CBC4</item>
+ <item name="colorOnSecondary">#000000</item>
+ <!-- Status bar color. -->
+ <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+ <!-- Customize your theme here. -->
+ </style>
+</resources>
+AndroidManifest.xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ package="com.example.twoactivity">
+ <application
+ android:allowBackup="true"
+ android:icon="@mipmap/ic_launcher"
+ android:label="@string/app_name"
+ android:supportsRtl="true"
+ android:theme="@style/Theme.TwoActivity">
+ <activity android:name="com.example.twoactivity.MainActivity">
+ <intent-filter>
+ <action android:name="android.intent.action.MAIN" />
+ <category android:name="android.intent.category.LAUNCHER" />
+ </intent-filter>
+ </activity>
+ <activity android:name="com.example.twoactivity.SecondActivity"
+ android:label="@string/activity2_name"
+ android:parentActivityName="com.example.twoactivity.MainActivity">
+ <meta-data
+ android:name="android.support.PARENT_ACTIVITY"
+ android:value="com.example.twoactivity.MainActivity" />
+ </activity>
+ </application>
+</manifest>

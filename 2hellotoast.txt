@@ -1,0 +1,58 @@
+2. Design an Android application to create interactive user interface?
+Program:
+ activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"
+ xmlns:tools="http://schemas.android.com/tools"
+ android:layout_width="match_parent"
+ android:layout_height="match_parent"
+ android:orientation="vertical"
+ tools:context="com.example.hellotoast.MainActivity">
+ <Button
+ android:onClick="showToast"
+ android:layout_gravity="center"
+ android:gravity="center"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Show Toast"/>
+ <TextView
+ android:id="@+id/tv"
+ android:layout_gravity="center"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="0"
+ android:textSize="50sp"
+ />
+ <Button
+ android:onClick="countUp"
+ android:layout_gravity="center"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="count"/>
+</LinearLayout>
+
+MainActivity.java
+package com.example.hellotoast;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+public class MainActivity extends AppCompatActivity {
+ int count=0;
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ }
+ public void showToast(View view) {
+ Toast.makeText(this, "Hello Toast", Toast.LENGTH_SHORT).show();
+ }
+ public void countUp(View view) {
+ count++;
+ //Get the id of the TextView from activity_main.xml layout file
+ TextView tV=(TextView)findViewById(R.id.tv);
+ tV.setText(String.valueOf(count));//setText() method displays the text on the TextView
+ }
+}

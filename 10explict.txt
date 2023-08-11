@@ -1,0 +1,143 @@
+Experiment 10
+10. Design an Android application to demonstrate explicit intent?.
+Program:
+
+MainActivity.java:
+
+package com.example.explicitintents;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+public class MainActivity extends AppCompatActivity {
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.activity_main);
+ final EditText firstNum = (EditText)findViewById(R.id.firstNum);
+ final EditText secNum = (EditText)findViewById(R.id.secondNum);
+ Button btnAdd = (Button)findViewById(R.id.addBtn);
+ btnAdd.setOnClickListener(new View.OnClickListener() {
+ @Override
+ public void onClick(View v) {
+ int num1 = Integer.parseInt(firstNum.getText().toString());
+ int num2 = Integer.parseInt(secNum.getText().toString());
+ Intent intent = new Intent(MainActivity.this,ResultActivity.class);
+ intent.putExtra("SUM",num1+" + "+num2+" = "+(num1+num2));
+ startActivity(intent);
+ }
+ });
+ }
+}
+
+ResultActivity.java:
+
+package com.example.explicitintents;
+import android.content.Intent;
+import android.os.Bundle;
+import androidx.appcompat.app.AppCompatActivity;
+import android.widget.TextView;
+public class ResultActivity extends AppCompatActivity {
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+ super.onCreate(savedInstanceState);
+ setContentView(R.layout.result);
+ TextView result = (TextView)findViewById(R.id.resultView);
+ Intent intent = getIntent();
+ String addition = (String)intent.getSerializableExtra("SUM");
+ result.setText(addition);
+ }
+}
+
+activity_main.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:orientation="vertical" android:layout_width="match_parent"
+ android:layout_height="match_parent">
+ <TextView
+ android:id="@+id/fstTxt"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:layout_marginLeft="100dp"
+ android:layout_marginTop="150dp"
+ android:text="First Number"
+ />
+ <EditText
+ android:id="@+id/firstNum"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:layout_marginLeft="100dp"
+ android:ems="10">
+ </EditText>
+ <TextView
+ android:id="@+id/secTxt"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:text="Second Number"
+ android:layout_marginLeft="100dp"
+ />
+ <EditText
+ android:id="@+id/secondNum"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:layout_marginLeft="100dp"
+ android:ems="10" />
+ <Button
+android:id="@+id/addBtn"
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:layout_marginLeft="100dp"
+ android:text="Add" />
+</LinearLayout>
+
+result.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ android:orientation="vertical" android:layout_width="match_parent"
+ android:layout_height="match_parent">
+ <TextView
+ android:layout_width="wrap_content"
+ android:layout_height="wrap_content"
+ android:id="@+id/resultView"
+ android:layout_marginLeft="100dp"
+ android:layout_marginTop="150dp"/>
+</LinearLayout>
+style.xml:
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+ <!-- Base application theme. -->
+ <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+ <!-- Customize your theme here. -->
+ <item name="colorPrimary">@color/design_default_color_primary</item>
+ <item name="colorPrimaryDark">@color/design_default_color_primary_dark</item>
+ <item name="colorAccent">@color/teal_700</item>
+ </style>
+</resources>
+
+AndroidManifest.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+ package="com.example.explicitintents">
+ <application
+ android:allowBackup="true"
+ android:icon="@mipmap/ic_launcher"
+ android:label="Explicit Intent - Activity1"
+ android:roundIcon="@mipmap/ic_launcher_round"
+ android:supportsRtl="true"
+ android:theme="@style/AppTheme">
+ <activity android:name="com.example.explicitintents.MainActivity">
+ <intent-filter>
+ <action android:name="android.intent.action.MAIN" />
+ <category android:name="android.intent.category.LAUNCHER" />
+ </intent-filter>
+ </activity>
+<activity android:name="com.example.explicitintents.ResultActivity" android:label="Explicit 
+Intent - Activity2">
+ </activity>
+ </application>
+</manifest>
